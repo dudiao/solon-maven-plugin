@@ -37,7 +37,6 @@ public class CopyLoader {
 
     private static void setLoader() throws IOException {
         try {
-
             //获取当前类所在路径
             ProtectionDomain protectionDomain = CopyLoader.class.getProtectionDomain();
             CodeSource codeSource = protectionDomain.getCodeSource();
@@ -82,19 +81,6 @@ public class CopyLoader {
             output.write(buffer, 0, n);
         }
         return output.toByteArray();
-    }
-
-    private static void writeToLocal(String destination, InputStream input)
-            throws IOException {
-        int index;
-        byte[] bytes = new byte[1024];
-        FileOutputStream downloadFile = new FileOutputStream(destination);
-        while ((index = input.read(bytes)) != -1) {
-            downloadFile.write(bytes, 0, index);
-            downloadFile.flush();
-        }
-        downloadFile.close();
-        input.close();
     }
 
 }

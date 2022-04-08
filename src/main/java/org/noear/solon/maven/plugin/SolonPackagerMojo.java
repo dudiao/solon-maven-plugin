@@ -18,17 +18,20 @@ import java.util.Set;
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class SolonPackagerMojo extends AbstractMojo {
 
-    @Component
-    private MavenProject project;
+    @Parameter(required = true)
+    private String mainClass;
 
     @Parameter(defaultValue = "${project.build.directory}", required = true)
     private File outputDirectory;
 
+    @Parameter(defaultValue = "${project.build.finalName}", required = true)
+    private String finalName;
+
     @Parameter
     private String classifier;
 
-    @Parameter(defaultValue = "${project.build.finalName}", required = true)
-    private String finalName;
+    @Component
+    private MavenProject project;
 
     private Log logger = getLog();
 
@@ -45,7 +48,7 @@ public class SolonPackagerMojo extends AbstractMojo {
 
     private void repackage() throws MojoExecutionException, MojoFailureException {
         File sourceFile = project.getArtifact().getFile();
-        Repackager repackager = new Repackager(sourceFile,logger);
+        Repackager repackager = new Repackager(sourceFile,logger,mainClass);
         File target = getTargetFile();
         Set<Artifact> artifacts = project.getArtifacts();
         Libraries libraries = new ArtifactsLibraries(artifacts, Collections.emptyList(), getLog());
@@ -65,7 +68,6 @@ public class SolonPackagerMojo extends AbstractMojo {
             this.outputDirectory.mkdirs();
         }
         String name = this.finalName + classifier + "." + this.project.getArtifact().getArtifactHandler().getExtension();
-        System.out.println(name);
         return new File(this.outputDirectory, name);
     }
 

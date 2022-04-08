@@ -1,8 +1,6 @@
 package org.noear.solon.maven.plugin;
 
 
-import javassist.ClassPool;
-import javassist.CtClass;
 import org.apache.maven.plugin.logging.Log;
 import org.noear.solon.maven.plugin.tools.tool.*;
 
@@ -10,10 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -30,11 +24,14 @@ public class Repackager {
     private static final byte[] ZIP_FILE_HEADER = new byte[]{'P', 'K', 3, 4};
 
     private final File source;
+    private final String mainClass;
 
     private Layout layout;
+
     private Log logger;
 
-    public Repackager(File source, Log logger) {
+    public Repackager(File source, Log logger,String mainClass) {
+        this.mainClass=mainClass;
         this.logger = logger;
         if (source == null) {
             throw new IllegalArgumentException("Source file must be provided");
@@ -192,52 +189,11 @@ public class Repackager {
         manifest = new Manifest(manifest);
         manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
         manifest.getMainAttributes().putValue(JAR_TOOL, JAR_TOOL_VALUE);
-        manifest.getMainAttributes().putValue(START_CLASS, getStartClass());
+        manifest.getMainAttributes().putValue(START_CLASS, mainClass);
         manifest.getMainAttributes().putValue("Main-Class", MAIN_CLASS);
         return manifest;
     }
 
-
-    private String getStartClass() throws IOException {
-        ClassPool pool = ClassPool.getDefault();
-        File f = getBackupFile();
-        URL url1 = f.toURI().toURL();
-        URLClassLoader myClassLoader = new URLClassLoader(new URL[]{url1}, Thread.currentThread().getContextClassLoader());
-        JarFile jar = new JarFile(f);
-        Enumeration<JarEntry> enumFiles = jar.entries();
-
-        while (enumFiles.hasMoreElements()) {
-            JarEntry entry = enumFiles.nextElement();
-            String classFullName = entry.getName();
-            if (classFullName.endsWith(".class")) {
-                try {
-                    String className = classFullName.substring(0, classFullName.length() - 6).replace("/", ".");
-                    Class<?> myclass = myClassLoader.loadClass(className);
-                    Method[] declaredMethods = myclass.getDeclaredMethods();
-                    for (Method declaredMethod : declaredMethods) {
-                        if (declaredMethod.getName().equals("main") && declaredMethod.getParameterTypes().length == 1) {
-                            if (declaredMethod.getParameterTypes()[0].equals(String[].class) && Modifier.isStatic(declaredMethod.getModifiers())) {
-                                if (declaredMethod.getReturnType().getName().equals("void")) {
-
-                                    //todo 带优化启动标识，目前检查主函数比较low
-
-//                                    CtClass ctClass = pool.makeClass(jar.getInputStream(entry));
-//                                    for (Object annotation : ctClass.getAnnotations()) {
-//                                        if (annotation.toString().endsWith("HServerBoot")) {
-                                            logger.info("启动类：" + myclass);
-                                            return myclass.getName();
-//                                        }
-//                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (Throwable ignored) {
-                }
-            }
-        }
-        throw new IllegalStateException("找不到启动类,请使用@HServerBoot标记你的启动类");
-    }
 
     private static Class<?> loadClass(String fullClzName) {
         try {

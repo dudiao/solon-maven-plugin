@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
- * {@link URLStreamHandler} for Spring Boot loader {@link JarFile}s.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

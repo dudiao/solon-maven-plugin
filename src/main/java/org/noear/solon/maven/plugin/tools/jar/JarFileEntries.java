@@ -17,8 +17,6 @@ import java.util.zip.ZipEntry;
  * order position of the entry. The arrays are stored in hashCode order so that a binary
  * search can be used to find a name.
  * <p>
- * A typical Spring Boot application will have somewhere in the region of 10,500 entries
- * which should consume about 122K.
  *
  * @author Phillip Webb
  */

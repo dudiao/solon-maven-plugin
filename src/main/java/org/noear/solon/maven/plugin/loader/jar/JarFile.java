@@ -59,7 +59,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
 
-	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
+	private static final String HANDLERS_PACKAGE = "org.noear.solon.maven.plugin.loader";
 
 	private static final AsciiBytes SLASH = new AsciiBytes("/");
 

@@ -132,7 +132,7 @@ public class JarFileArchive extends Archive {
 		while (attempts++ < 1000) {
 			String fileName = new File(this.jarFile.getName()).getName();
 			File unpackFolder = new File(parent,
-					fileName + "-spring-boot-libs-" + UUID.randomUUID());
+					fileName + "-libs-" + UUID.randomUUID());
 			if (unpackFolder.mkdirs()) {
 				return unpackFolder;
 			}

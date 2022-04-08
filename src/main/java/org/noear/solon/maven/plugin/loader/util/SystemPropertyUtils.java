@@ -27,7 +27,6 @@ import java.util.Set;
  * e.g. {@code $ user.dir} . Default values can be supplied using the ":" separator
  * between key and value.
  * <p>
- * Adapted from Spring.
  *
  * @author Juergen Hoeller
  * @author Rob Harrop
