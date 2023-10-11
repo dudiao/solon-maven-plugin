@@ -1,5 +1,8 @@
 package org.noear.solon.maven.plugin.tools.tool;
 
+
+import org.noear.solon.maven.plugin.Constant;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,7 +33,24 @@ public final class Layouts {
 		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
 			return new Jar();
 		}
+		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".war")) {
+			return new War();
+		}
 		throw new IllegalStateException("Unable to deduce layout for '" + file + "'");
+	}
+
+
+	public static class War implements RepackagingLayout {
+
+		@Override
+		public String getLibraryDestination(String libraryName, LibraryScope scope) {
+			return Constant.WAR_LIB_PATH;
+		}
+
+		@Override
+		public String getRepackagedClassesLocation() {
+			return "";
+		}
 	}
 
 	/**
@@ -40,7 +60,7 @@ public final class Layouts {
 
 		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return "lib/";
+			return Constant.LIB_PATH;
 		}
 
 		@Override
@@ -64,7 +84,7 @@ public final class Layouts {
 		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
 			if (LIB_DESTINATION_SCOPES.contains(scope)) {
-				return "lib/";
+				return Constant.LIB_PATH;
 			}
 			return null;
 		}

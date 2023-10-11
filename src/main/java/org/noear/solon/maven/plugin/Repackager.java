@@ -2,6 +2,7 @@ package org.noear.solon.maven.plugin;
 
 
 import org.apache.maven.plugin.logging.Log;
+import org.noear.solon.maven.plugin.tools.SolonMavenUtil;
 import org.noear.solon.maven.plugin.tools.tool.*;
 
 import java.io.File;
@@ -13,7 +14,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import static org.noear.solon.maven.plugin.tools.Constant.*;
+import static org.noear.solon.maven.plugin.Constant.*;
 
 
 /**
@@ -28,10 +29,9 @@ public class Repackager {
 
     private Layout layout;
 
-    private Log logger;
+    private final Log logger;
 
-    public Repackager(File source, Log logger,String mainClass) {
-        this.mainClass=mainClass;
+    public Repackager(File source, Log logger, String mainClass) throws Exception {
         this.logger = logger;
         if (source == null) {
             throw new IllegalArgumentException("Source file must be provided");
@@ -41,6 +41,9 @@ public class Repackager {
                     + "got " + source.getAbsolutePath());
         }
         this.source = source.getAbsoluteFile();
+
+		this.mainClass = SolonMavenUtil.getStartClass(getFile(), mainClass, logger);
+        logger.info("The startup class of the JAR: " + this.mainClass);
     }
 
     /**
@@ -91,6 +94,10 @@ public class Repackager {
      */
     public final File getBackupFile() {
         return new File(this.source.getParentFile(), this.source.getName() + ".original");
+    }
+
+    public final File getFile() {
+        return new File(this.source.getParentFile(), this.source.getName());
     }
 
     private boolean alreadyRepackaged() throws IOException {
@@ -195,25 +202,10 @@ public class Repackager {
     }
 
 
-    private static Class<?> loadClass(String fullClzName) {
-        try {
-            return Thread.currentThread().getContextClassLoader().loadClass(fullClzName);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private void renameFile(File file, File dest) {
         if (!file.renameTo(dest)) {
             throw new IllegalStateException(
                     "Unable to rename '" + file + "' to '" + dest + "'");
-        }
-    }
-
-    private void deleteFile(File file) {
-        if (!file.delete()) {
-            throw new IllegalStateException("Unable to delete '" + file + "'");
         }
     }
 

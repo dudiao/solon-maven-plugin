@@ -19,7 +19,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import static org.noear.solon.maven.plugin.tools.Constant.HEAD_PACKAGE;
+import static org.noear.solon.maven.plugin.Constant.HEAD_PACKAGE;
 
 /**
  * Extended variant of {@link java.util.jar.JarFile} that behaves in the same way but
