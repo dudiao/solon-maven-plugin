@@ -1,6 +1,4 @@
 <h1 align="center" style="text-align:center;">
-<img src="solon_icon.png" width="128" />
-<br />
 Solon
 </h1>
 <p align="center">
